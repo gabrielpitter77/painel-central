@@ -105,6 +105,12 @@ const PAINEIS = [
 const tabsEl = document.getElementById('tabs');
 const mainEl = document.getElementById('main');
 
+function urlSemCache(url){
+  // adiciona um carimbo na URL pra evitar que o navegador reaproveite uma
+  // versão antiga do painel guardada em cache
+  return url + (url.indexOf('?') === -1 ? '?' : '&') + 'v=' + Date.now();
+}
+
 PAINEIS.forEach(function(p, i){
   const btn = document.createElement('button');
   btn.className = 'tab-btn' + (i === 0 ? ' active' : '');
@@ -117,7 +123,7 @@ PAINEIS.forEach(function(p, i){
   iframe.id = 'frame-' + p.id;
   iframe.className = i === 0 ? 'active' : '';
   iframe.loading = i === 0 ? 'eager' : 'lazy';
-  if(i === 0) iframe.src = p.url; // carrega só a primeira aba de cara
+  if(i === 0) iframe.src = urlSemCache(p.url); // carrega só a primeira aba de cara
   iframe.dataset.url = p.url;
   iframe.dataset.loaded = i === 0 ? 'true' : 'false';
   mainEl.appendChild(iframe);
@@ -133,7 +139,7 @@ function selecionarAba(id){
   // carrega o iframe só na primeira vez que a aba é aberta (evita buscar tudo de uma vez)
   const frame = document.getElementById('frame-' + id);
   if(frame.dataset.loaded === 'false'){
-    frame.src = frame.dataset.url;
+    frame.src = urlSemCache(frame.dataset.url);
     frame.dataset.loaded = 'true';
   }
 }
